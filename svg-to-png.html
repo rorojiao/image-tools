@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SVG to PNG — ImageTools</title>
+<meta name="description" content="Convert SVG to PNG online. Paste SVG code or upload file. Choose custom dimensions. Free browser-side conversion.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover,nav a.active{background:var(--glass);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:1.8rem;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tabs{display:flex;gap:0;margin-bottom:1.5rem;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+.tab{flex:1;padding:0.8rem;text-align:center;cursor:pointer;background:var(--glass);color:var(--text2);transition:all 0.2s;font-size:0.95rem}
+.tab.active{background:var(--accent);color:#fff}
+.input-area{margin-bottom:1.5rem}
+textarea{width:100%;height:250px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:12px;padding:1rem;color:var(--text);font-family:monospace;font-size:0.85rem;resize:vertical;outline:none;transition:border-color 0.2s}
+textarea:focus{border-color:var(--accent)}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--glass);backdrop-filter:blur(12px);display:none}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);box-shadow:var(--glow)}
+.drop-zone .icon{font-size:3rem;display:block;margin-bottom:1rem}
+.controls{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem}
+.row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+label{color:var(--text2);font-size:0.9rem}
+input[type=number]{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;color:var(--text);font-size:0.95rem;width:120px}
+input[type=number]:focus{outline:none;border-color:var(--accent)}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:10px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:all 0.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+.preview{text-align:center;margin:1.5rem 0}
+.preview canvas{max-width:100%;border-radius:12px;border:1px solid var(--border);background:repeating-conic-gradient(rgba(255,255,255,0.05) 0% 25%,transparent 0% 50%) 50%/20px 20px}
+.spinner{display:none;width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:1rem auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:0.8rem 1.5rem;border-radius:10px;font-size:0.9rem;transition:transform 0.3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:1.4rem}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}input[type=number]{width:100%}.row{flex-direction:column;align-items:stretch}}
+</style></head><body>
+<header>
+  <a href="index.html" class="logo">🖼️ ImageTools</a>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html">Crop</a>
+    <a href="image-compressor.html">Compress</a>
+    <a href="image-to-base64.html">Base64</a>
+    <a href="image-filters.html">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html" class="active">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>🔄 SVG to PNG Converter</h1>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('paste')">📝 Paste SVG Code</div>
+    <div class="tab" onclick="switchTab('upload')">📂 Upload SVG File</div>
+  </div>
+  <div class="input-area">
+    <textarea id="svgInput" placeholder="Paste your SVG code here...&#10;&#10;&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 100&quot;&gt;&#10;  &lt;circle cx=&quot;50&quot; cy=&quot;50&quot; r=&quot;40&quot; fill=&quot;#6c5ce7&quot;/&gt;&#10;&lt;/svg&gt;"></textarea>
+    <div class="drop-zone" id="dropZone">
+      <span class="icon">📂</span>
+      <p>Drag & drop an SVG file here, or click to select</p>
+      <input type="file" accept=".svg,image/svg+xml" id="fileInput" style="display:none">
+    </div>
+  </div>
+  <div class="controls">
+    <div class="row">
+      <label>Width:</label>
+      <input type="number" id="pngWidth" value="512" min="1" max="8192">
+      <label>Height:</label>
+      <input type="number" id="pngHeight" value="512" min="1" max="8192">
+      <button class="btn" id="convertBtn">Convert & Download PNG</button>
+    </div>
+  </div>
+  <div class="spinner" id="spinner"></div>
+  <div class="preview" id="preview"><canvas id="canvas" style="display:none"></canvas></div>
+</div>
+<footer>
+  <p><a href="index.html">← Back to all tools</a></p>
+  <p style="margin-top:0.5rem"><a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a></p>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const svgInput=document.getElementById('svgInput'),dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),pngWidth=document.getElementById('pngWidth'),pngHeight=document.getElementById('pngHeight'),convertBtn=document.getElementById('convertBtn'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),spinner=document.getElementById('spinner'),toast=document.getElementById('toast');
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2500)}
+function switchTab(mode){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===(mode==='paste'?0:1)));
+  svgInput.style.display=mode==='paste'?'block':'none';
+  dropZone.style.display=mode==='upload'?'block':'none';
+}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])readSvgFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])readSvgFile(e.target.files[0])});
+function readSvgFile(file){const r=new FileReader();r.onload=e=>{svgInput.value=e.target.result;switchTab('paste');showToast('SVG loaded!')};r.readAsText(file)}
+convertBtn.addEventListener('click',()=>{
+  const svg=svgInput.value.trim();
+  if(!svg){showToast('Please enter SVG code');return}
+  const w=parseInt(pngWidth.value)||512,h=parseInt(pngHeight.value)||512;
+  spinner.style.display='block';
+  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{
+    canvas.width=w;canvas.height=h;canvas.style.display='block';
+    ctx.clearRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+    URL.revokeObjectURL(url);spinner.style.display='none';
+    canvas.toBlob(b=>{
+      const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`svg_${w}x${h}.png`;a.click();URL.revokeObjectURL(u);
+      showToast('✅ PNG downloaded!');
+    },'image/png');
+  };
+  img.onerror=()=>{spinner.style.display='none';showToast('❌ Invalid SVG code')};
+  img.src=url;
+});
+</script></body></html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Filters — ImageTools</title>
+<meta name="description" content="Apply filters to images: brightness, contrast, grayscale, sepia, blur, hue-rotate. Real-time preview.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover,nav a.active{background:var(--glass);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:1.8rem;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--glass);backdrop-filter:blur(12px);margin-bottom:1.5rem}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);box-shadow:var(--glow)}
+.drop-zone .icon{font-size:3rem;display:block;margin-bottom:1rem}
+.panel{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:none}
+.slider-row{display:flex;align-items:center;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap}
+.slider-row label{color:var(--text2);font-size:0.9rem;min-width:100px}
+.slider-row input[type=range]{flex:1;-webkit-appearance:none;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;accent-color:var(--accent);min-width:150px}
+.slider-row .val{color:var(--text);font-size:0.85rem;min-width:50px;text-align:right}
+.btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:10px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:all 0.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+.btn.secondary{background:var(--glass);border:1px solid var(--border)}
+.preview{text-align:center;margin:1rem 0}
+.preview canvas{max-width:100%;max-height:450px;border-radius:12px;border:1px solid var(--border)}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:0.8rem 1.5rem;border-radius:10px;font-size:0.9rem;transition:transform 0.3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:1.4rem}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}.slider-row{flex-direction:column;align-items:stretch}}
+</style></head><body>
+<header>
+  <a href="index.html" class="logo">🖼️ ImageTools</a>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html">Crop</a>
+    <a href="image-compressor.html">Compress</a>
+    <a href="image-to-base64.html">Base64</a>
+    <a href="image-filters.html" class="active">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>🎨 Image Filters</h1>
+  <div class="drop-zone" id="dropZone">
+    <span class="icon">📂</span>
+    <p>Drag & drop an image here, or click to select</p>
+    <input type="file" accept="image/*" id="fileInput" style="display:none">
+  </div>
+  <div class="panel" id="panel">
+    <div class="slider-row"><label>Brightness</label><input type="range" id="brightness" min="0" max="300" value="100"><span class="val" id="brightnessVal">100%</span></div>
+    <div class="slider-row"><label>Contrast</label><input type="range" id="contrast" min="0" max="300" value="100"><span class="val" id="contrastVal">100%</span></div>
+    <div class="slider-row"><label>Grayscale</label><input type="range" id="grayscale" min="0" max="100" value="0"><span class="val" id="grayscaleVal">0%</span></div>
+    <div class="slider-row"><label>Sepia</label><input type="range" id="sepia" min="0" max="100" value="0"><span class="val" id="sepiaVal">0%</span></div>
+    <div class="slider-row"><label>Blur</label><input type="range" id="blur" min="0" max="20" value="0" step="0.5"><span class="val" id="blurVal">0px</span></div>
+    <div class="slider-row"><label>Hue Rotate</label><input type="range" id="hueRotate" min="0" max="360" value="0"><span class="val" id="hueRotateVal">0°</span></div>
+    <div class="slider-row"><label>Saturate</label><input type="range" id="saturate" min="0" max="300" value="100"><span class="val" id="saturateVal">100%</span></div>
+    <div class="btn-row">
+      <button class="btn" id="downloadBtn">💾 Download</button>
+      <button class="btn secondary" id="resetBtn">🔄 Reset</button>
+    </div>
+  </div>
+  <div class="preview" id="preview"><canvas id="canvas"></canvas></div>
+</div>
+<footer>
+  <p><a href="index.html">← Back to all tools</a></p>
+  <p style="margin-top:0.5rem"><a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a></p>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),panel=document.getElementById('panel'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),toast=document.getElementById('toast');
+let origImg=null;
+const filters={brightness:{el:document.getElementById('brightness'),unit:'%',def:100},contrast:{el:document.getElementById('contrast'),unit:'%',def:100},grayscale:{el:document.getElementById('grayscale'),unit:'%',def:0},sepia:{el:document.getElementById('sepia'),unit:'%',def:0},blur:{el:document.getElementById('blur'),unit:'px',def:0},hueRotate:{el:document.getElementById('hueRotate'),unit:'deg',def:0},saturate:{el:document.getElementById('saturate'),unit:'%',def:100}};
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2500)}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImage(e.target.files[0])});
+function loadImage(file){
+  const i=new Image();i.onload=()=>{origImg=i;canvas.width=i.width;canvas.height=i.height;panel.style.display='block';applyFilters();showToast('Image loaded!')};i.src=URL.createObjectURL(file);
+}
+Object.keys(filters).forEach(k=>{
+  filters[k].el.addEventListener('input',()=>{
+    document.getElementById(k+'Val').textContent=filters[k].el.value+filters[k].unit;applyFilters();
+  });
+});
+function applyFilters(){
+  if(!origImg)return;
+  const f=`brightness(${filters.brightness.el.value}%) contrast(${filters.contrast.el.value}%) grayscale(${filters.grayscale.el.value}%) sepia(${filters.sepia.el.value}%) blur(${filters.blur.el.value}px) hue-rotate(${filters.hueRotate.el.value}deg) saturate(${filters.saturate.el.value}%)`;
+  ctx.filter=f;ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(origImg,0,0);
+}
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  Object.keys(filters).forEach(k=>{filters[k].el.value=filters[k].def;document.getElementById(k+'Val').textContent=filters[k].def+filters[k].unit});applyFilters();showToast('Filters reset');
+});
+document.getElementById('downloadBtn').addEventListener('click',()=>{
+  if(!origImg)return;canvas.toBlob(b=>{const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='filtered.png';a.click();URL.revokeObjectURL(u);showToast('✅ Downloaded!')},'image/png');
+});
+</script></body></html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ImageTools 🖼️ — Free Online Image Tools</title>
+<meta name="description" content="Free online image tools: resize, crop, compress, base64 convert, filters, color extract, SVG to PNG. No upload, pure browser-side processing.">
+<meta property="og:title" content="ImageTools — Free Online Image Tools">
+<meta property="og:description" content="Resize, crop, compress, filter images — all free, no upload, browser-side.">
+<meta property="og:url" content="https://rorojiao.github.io/image-tools/">
+<link rel="canonical" href="https://rorojiao.github.io/image-tools/">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#14141f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1;animation:bgMove 20s ease-in-out infinite alternate}
+@keyframes bgMove{to{transform:translate(5%,3%)}}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover{background:var(--glass);color:var(--text)}
+.container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:2.2rem;margin-bottom:0.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{text-align:center;color:var(--text2);margin-bottom:2.5rem;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
+.card{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:1.8rem;cursor:pointer;transition:all 0.3s ease;text-decoration:none;color:inherit;display:block}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:var(--glow)}
+.card .icon{font-size:2.5rem;margin-bottom:1rem;display:block}
+.card h3{font-size:1.1rem;margin-bottom:0.5rem;color:#fff}
+.card p{color:var(--text2);font-size:0.9rem;line-height:1.5}
+.more-tools{max-width:800px;margin:3rem auto;padding:1.5rem;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);text-align:center}
+.more-tools h3{margin-bottom:1rem;color:#fff}
+.more-tools .links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.more-tools a{padding:6px 14px;background:var(--glass);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text2);font-size:0.85rem;transition:all 0.2s}
+.more-tools a:hover{border-color:var(--accent);color:var(--text)}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+.tip-jar{text-align:center;margin:2rem auto;padding:1.5rem;background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);max-width:480px}
+.tip-jar h3{color:#fff;margin-bottom:0.5rem}
+.tip-jar p{color:var(--text2);font-size:0.9rem;margin-bottom:0.75rem}
+.tip-jar .badges{margin:0.5rem 0;display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.tip-jar .badges span{padding:2px 8px;background:var(--glass);border:1px solid var(--border);border-radius:4px;font-size:0.8rem;color:var(--text2)}
+.tip-jar .addr{word-break:break-all;background:rgba(0,0,0,0.3);padding:0.75rem;border-radius:8px;font-family:monospace;font-size:0.78rem;cursor:pointer;border:1px solid var(--border);transition:all 0.2s}
+.tip-jar .addr:hover{border-color:var(--accent)}
+@media(max-width:600px){h1{font-size:1.6rem}.grid{grid-template-columns:1fr}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}}
+</style></head><body>
+<header>
+  <div class="logo">🖼️ ImageTools</div>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html">Crop</a>
+    <a href="image-compressor.html">Compress</a>
+    <a href="image-to-base64.html">Base64</a>
+    <a href="image-filters.html">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>Free Online Image Tools 🖼️</h1>
+  <p class="subtitle">Browser-side processing. No upload. No tracking. 100% free.</p>
+  <div class="grid">
+    <a href="image-resizer.html" class="card"><span class="icon">📐</span><h3>Image Resizer</h3><p>Resize images to custom dimensions. Maintain aspect ratio or set exact width & height. Download instantly.</p></a>
+    <a href="image-cropper.html" class="card"><span class="icon">✂️</span><h3>Image Cropper</h3><p>Crop images with drag-to-select. Free or fixed aspect ratios (16:9, 4:3, 1:1). Pixel-perfect results.</p></a>
+    <a href="image-compressor.html" class="card"><span class="icon">🗜️</span><h3>Image Compressor</h3><p>Compress images by adjusting quality. See before/after file size comparison. JPEG & WebP output.</p></a>
+    <a href="image-to-base64.html" class="card"><span class="icon">🔤</span><h3>Image to Base64</h3><p>Convert any image to Base64 string. Drag & drop upload. One-click copy for CSS, HTML or data URI.</p></a>
+    <a href="image-filters.html" class="card"><span class="icon">🎨</span><h3>Image Filters</h3><p>Apply filters: brightness, contrast, grayscale, sepia, blur, hue-rotate. Real-time preview with sliders.</p></a>
+    <a href="color-extractor.html" class="card"><span class="icon">🎯</span><h3>Color Extractor</h3><p>Pick colors from any image. Click to extract HEX, RGB, HSL values. Build a color palette history.</p></a>
+    <a href="svg-to-png.html" class="card"><span class="icon">🔄</span><h3>SVG to PNG</h3><p>Convert SVG code or files to PNG. Choose custom dimensions. High-quality rasterization in browser.</p></a>
+  </div>
+  <div class="more-tools">
+    <h3>🔗 More Free Tools</h3>
+    <div class="links">
+      <a href="https://rorojiao.github.io/devtoolbox/">🛠️ DevToolBox</a>
+      <a href="https://rorojiao.github.io/texttoolkit/">📝 TextToolkit</a>
+      <a href="https://rorojiao.github.io/seolite/">🔍 SEOLite</a>
+      <a href="https://rorojiao.github.io/passwordfort/">🔐 PasswordFort</a>
+      <a href="https://rorojiao.github.io/colorpick/">🎨 ColorPick</a>
+      <a href="https://rorojiao.github.io/qrcraft/">📱 QRCraft</a>
+      <a href="https://rorojiao.github.io/calcsmart/">🧮 CalcSmart</a>
+    </div>
+  </div>
+  <div class="tip-jar">
+    <h3>☕ Support Us</h3>
+    <p>If you find these tools useful, consider a small tip!</p>
+    <div class="badges"><span>ETH</span><span>USDC</span><span>BSC</span><span>Polygon</span></div>
+    <div class="addr" onclick="navigator.clipboard.writeText('0xEeD903787Cb86bcCc17777E5C7d10A4c2De43823').then(()=>this.textContent='✓ Copied!')">0xEeD903787Cb86bcCc17777E5C7d10A4c2De43823</div>
+  </div>
+</div>
+<footer>
+  <p>ImageTools — Free browser-side image processing tools. No data leaves your device.</p>
+  <p style="margin-top:0.5rem">
+    <a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a>
+  </p>
+</footer>
+</body></html>

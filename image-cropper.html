@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Cropper — ImageTools</title>
+<meta name="description" content="Crop images online for free. Drag to select area, fixed or free aspect ratio. Browser-side processing.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--card:#14141f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover,nav a.active{background:var(--glass);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:1.8rem;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--glass);backdrop-filter:blur(12px);margin-bottom:1.5rem}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);box-shadow:var(--glow)}
+.drop-zone.drag-over{background:rgba(108,92,231,0.1)}
+.drop-zone .icon{font-size:3rem;display:block;margin-bottom:1rem}
+.controls{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:none}
+.controls .row{display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
+.controls label{color:var(--text2);font-size:0.9rem}
+.controls select{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.5rem 0.8rem;color:var(--text);font-size:0.95rem}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:10px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:all 0.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+.canvas-wrap{position:relative;display:inline-block;margin:1rem auto;cursor:crosshair}
+.canvas-wrap canvas{max-width:100%;border-radius:12px;border:1px solid var(--border);display:block}
+.selection{position:absolute;border:2px solid var(--accent);background:rgba(108,92,231,0.15);pointer-events:none}
+.info{color:var(--text2);font-size:0.85rem;text-align:center;margin-top:0.5rem}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:0.8rem 1.5rem;border-radius:10px;font-size:0.9rem;transition:transform 0.3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.preview-area{text-align:center}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:1.4rem}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}}
+</style></head><body>
+<header>
+  <a href="index.html" class="logo">🖼️ ImageTools</a>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html" class="active">Crop</a>
+    <a href="image-compressor.html">Compress</a>
+    <a href="image-to-base64.html">Base64</a>
+    <a href="image-filters.html">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>✂️ Image Cropper</h1>
+  <div class="drop-zone" id="dropZone">
+    <span class="icon">📂</span>
+    <p>Drag & drop an image here, or click to select</p>
+    <input type="file" accept="image/*" id="fileInput" style="display:none">
+  </div>
+  <div class="controls" id="controls">
+    <div class="row">
+      <label>Aspect Ratio:</label>
+      <select id="ratioSelect">
+        <option value="free">Free</option>
+        <option value="1:1">1:1</option>
+        <option value="4:3">4:3</option>
+        <option value="16:9">16:9</option>
+        <option value="3:2">3:2</option>
+      </select>
+      <button class="btn" id="cropBtn">Crop & Download</button>
+    </div>
+    <p class="info" id="selInfo">Click and drag on the image to select crop area</p>
+  </div>
+  <div class="preview-area" id="previewArea">
+    <div class="canvas-wrap" id="canvasWrap" style="display:none">
+      <canvas id="canvas"></canvas>
+      <div class="selection" id="selection" style="display:none"></div>
+    </div>
+  </div>
+</div>
+<footer>
+  <p><a href="index.html">← Back to all tools</a></p>
+  <p style="margin-top:0.5rem">
+    <a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a>
+  </p>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),controls=document.getElementById('controls'),canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),canvasWrap=document.getElementById('canvasWrap'),selDiv=document.getElementById('selection'),ratioSelect=document.getElementById('ratioSelect'),cropBtn=document.getElementById('cropBtn'),selInfo=document.getElementById('selInfo'),toast=document.getElementById('toast');
+let img=null,scale=1,isDragging=false,startX=0,startY=0,sel={x:0,y:0,w:0,h:0};
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2500)}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImage(e.target.files[0])});
+function loadImage(file){
+  const i=new Image();i.onload=()=>{
+    img=i;const maxW=Math.min(860,window.innerWidth-40);
+    scale=img.width>maxW?maxW/img.width:1;
+    canvas.width=img.width*scale;canvas.height=img.height*scale;
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    canvasWrap.style.display='inline-block';controls.style.display='block';
+    selDiv.style.display='none';sel={x:0,y:0,w:0,h:0};
+    showToast('Image loaded! Drag to select crop area.');
+  };i.src=URL.createObjectURL(file);
+}
+canvasWrap.addEventListener('mousedown',e=>{
+  const r=canvas.getBoundingClientRect();startX=e.clientX-r.left;startY=e.clientY-r.top;isDragging=true;
+  selDiv.style.display='block';sel={x:startX,y:startY,w:0,h:0};updateSel();
+});
+canvasWrap.addEventListener('mousemove',e=>{
+  if(!isDragging)return;const r=canvas.getBoundingClientRect();
+  let cx=Math.max(0,Math.min(e.clientX-r.left,canvas.width)),cy=Math.max(0,Math.min(e.clientY-r.top,canvas.height));
+  let w=cx-startX,h=cy-startY;
+  const rv=ratioSelect.value;
+  if(rv!=='free'){const[rw,rh]=rv.split(':').map(Number);const ar=rw/rh;if(Math.abs(w)/ar<Math.abs(h))h=Math.sign(h)*Math.abs(w)/ar;else w=Math.sign(w)*Math.abs(h)*ar}
+  sel.x=w>=0?startX:startX+w;sel.y=h>=0?startY:startY+h;sel.w=Math.abs(w);sel.h=Math.abs(h);updateSel();
+});
+document.addEventListener('mouseup',()=>{isDragging=false});
+canvasWrap.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0],r=canvas.getBoundingClientRect();startX=t.clientX-r.left;startY=t.clientY-r.top;isDragging=true;selDiv.style.display='block'},{passive:false});
+canvasWrap.addEventListener('touchmove',e=>{e.preventDefault();if(!isDragging)return;const t=e.touches[0],r=canvas.getBoundingClientRect();let cx=Math.max(0,Math.min(t.clientX-r.left,canvas.width)),cy=Math.max(0,Math.min(t.clientY-r.top,canvas.height));let w=cx-startX,h=cy-startY;const rv=ratioSelect.value;if(rv!=='free'){const[rw,rh]=rv.split(':').map(Number);const ar=rw/rh;if(Math.abs(w)/ar<Math.abs(h))h=Math.sign(h)*Math.abs(w)/ar;else w=Math.sign(w)*Math.abs(h)*ar}sel.x=w>=0?startX:startX+w;sel.y=h>=0?startY:startY+h;sel.w=Math.abs(w);sel.h=Math.abs(h);updateSel()},{passive:false});
+document.addEventListener('touchend',()=>{isDragging=false});
+function updateSel(){selDiv.style.left=sel.x+'px';selDiv.style.top=sel.y+'px';selDiv.style.width=sel.w+'px';selDiv.style.height=sel.h+'px';const rw=Math.round(sel.w/scale),rh=Math.round(sel.h/scale);selInfo.textContent=`Selection: ${rw} × ${rh}px`}
+cropBtn.addEventListener('click',()=>{
+  if(!img||sel.w<2||sel.h<2){showToast('Please select a crop area first');return}
+  const sx=sel.x/scale,sy=sel.y/scale,sw=sel.w/scale,sh=sel.h/scale;
+  const c=document.createElement('canvas');c.width=Math.round(sw);c.height=Math.round(sh);
+  c.getContext('2d').drawImage(img,sx,sy,sw,sh,0,0,c.width,c.height);
+  c.toBlob(b=>{const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`cropped_${c.width}x${c.height}.png`;a.click();URL.revokeObjectURL(u);showToast('✅ Cropped and downloaded!')},'image/png');
+});
+</script></body></html>

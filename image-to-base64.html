@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image to Base64 — ImageTools</title>
+<meta name="description" content="Convert images to Base64 strings online. Drag & drop, one-click copy. CSS data URI ready.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover,nav a.active{background:var(--glass);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:1.8rem;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--glass);backdrop-filter:blur(12px);margin-bottom:1.5rem}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);box-shadow:var(--glow)}
+.drop-zone .icon{font-size:3rem;display:block;margin-bottom:1rem}
+.output{display:none;margin-top:1.5rem}
+.output-box{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:12px;padding:1rem;position:relative}
+.output-box textarea{width:100%;height:200px;background:transparent;border:none;color:var(--text);font-family:monospace;font-size:0.82rem;resize:vertical;outline:none}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:10px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:all 0.2s;margin:0.3rem}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+.btn-row{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem}
+.info{color:var(--text2);font-size:0.85rem;margin-top:0.5rem}
+.preview{text-align:center;margin:1rem 0}
+.preview img{max-width:100%;max-height:250px;border-radius:12px;border:1px solid var(--border)}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:0.8rem 1.5rem;border-radius:10px;font-size:0.9rem;transition:transform 0.3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:1.4rem}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}}
+</style></head><body>
+<header>
+  <a href="index.html" class="logo">🖼️ ImageTools</a>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html">Crop</a>
+    <a href="image-compressor.html">Compress</a>
+    <a href="image-to-base64.html" class="active">Base64</a>
+    <a href="image-filters.html">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>🔤 Image to Base64</h1>
+  <div class="drop-zone" id="dropZone">
+    <span class="icon">📂</span>
+    <p>Drag & drop an image here, or click to select</p>
+    <input type="file" accept="image/*" id="fileInput" style="display:none">
+  </div>
+  <div class="preview" id="preview"></div>
+  <div class="output" id="output">
+    <div class="output-box"><textarea id="b64Output" readonly></textarea></div>
+    <p class="info" id="info"></p>
+    <div class="btn-row">
+      <button class="btn" onclick="copyText('data-uri')">📋 Copy Data URI</button>
+      <button class="btn" onclick="copyText('raw')">📋 Copy Raw Base64</button>
+      <button class="btn" onclick="copyText('css')">📋 Copy CSS background</button>
+      <button class="btn" onclick="copyText('html')">📋 Copy HTML &lt;img&gt;</button>
+    </div>
+  </div>
+</div>
+<footer>
+  <p><a href="index.html">← Back to all tools</a></p>
+  <p style="margin-top:0.5rem"><a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a></p>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),output=document.getElementById('output'),b64Output=document.getElementById('b64Output'),info=document.getElementById('info'),preview=document.getElementById('preview'),toast=document.getElementById('toast');
+let dataUri='',rawB64='',mimeType='';
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2500)}
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0])});
+function loadFile(file){
+  mimeType=file.type;const reader=new FileReader();
+  reader.onload=e=>{
+    dataUri=e.target.result;rawB64=dataUri.split(',')[1];
+    b64Output.value=dataUri;
+    info.textContent=`File: ${file.name} | Size: ${(file.size/1024).toFixed(1)} KB | Base64 length: ${rawB64.length} chars`;
+    output.style.display='block';
+    preview.innerHTML=`<img src="${dataUri}" alt="preview">`;
+    showToast('✅ Converted to Base64!');
+  };reader.readAsDataURL(file);
+}
+function copyText(mode){
+  let t='';
+  if(mode==='data-uri')t=dataUri;
+  else if(mode==='raw')t=rawB64;
+  else if(mode==='css')t=`background-image: url('${dataUri}');`;
+  else if(mode==='html')t=`<img src="${dataUri}" alt="image">`;
+  navigator.clipboard.writeText(t).then(()=>showToast('✅ Copied!'));
+}
+</script></body></html>

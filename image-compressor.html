@@ -1,0 +1,117 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Image Compressor — ImageTools</title>
+<meta name="description" content="Compress images online for free. Adjust quality, see before/after file size. JPEG & WebP output.">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--glass:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.1);--accent:#6c5ce7;--accent2:#a855f7;--text:#e2e8f0;--text2:#94a3b8;--radius:16px;--glow:0 0 20px rgba(108,92,231,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(108,92,231,0.08),transparent 50%),radial-gradient(circle at 70% 80%,rgba(168,85,247,0.06),transparent 50%);z-index:-1}
+header{backdrop-filter:blur(20px);background:rgba(10,10,15,0.8);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.4rem;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+nav{display:flex;gap:0.5rem;flex-wrap:wrap}
+nav a{color:var(--text2);text-decoration:none;padding:0.4rem 0.8rem;border-radius:8px;font-size:0.85rem;transition:all 0.2s}
+nav a:hover,nav a.active{background:var(--glass);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+h1{text-align:center;font-size:1.8rem;margin-bottom:1.5rem;background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.drop-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:3rem;text-align:center;cursor:pointer;transition:all 0.3s;background:var(--glass);backdrop-filter:blur(12px);margin-bottom:1.5rem}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);box-shadow:var(--glow)}
+.drop-zone .icon{font-size:3rem;display:block;margin-bottom:1rem}
+.controls{background:var(--glass);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.5rem;display:none}
+.row{display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
+label{color:var(--text2);font-size:0.9rem}
+select,input[type=range]{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:0.5rem;color:var(--text)}
+input[type=range]{-webkit-appearance:none;width:200px;height:6px;border:none;border-radius:3px;accent-color:var(--accent)}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:0.7rem 1.5rem;border-radius:10px;cursor:pointer;font-size:0.95rem;font-weight:600;transition:all 0.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:1.5rem 0}
+.stat{background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:1rem;text-align:center}
+.stat .val{font-size:1.4rem;font-weight:700;color:#fff}
+.stat .lbl{font-size:0.8rem;color:var(--text2);margin-top:0.3rem}
+.stat.saved .val{color:#10b981}
+.preview{text-align:center;margin:1rem 0}
+.preview img{max-width:100%;max-height:350px;border-radius:12px;border:1px solid var(--border)}
+.spinner{display:none;width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:1rem auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--accent);color:#fff;padding:0.8rem 1.5rem;border-radius:10px;font-size:0.9rem;transition:transform 0.3s;z-index:999}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;border-top:1px solid var(--border);margin-top:3rem}
+footer a{color:var(--accent);text-decoration:none}
+@media(max-width:600px){h1{font-size:1.4rem}.stats{grid-template-columns:1fr}header{padding:0.8rem 1rem}nav a{font-size:0.75rem;padding:0.3rem 0.5rem}input[type=range]{width:100%}}
+</style></head><body>
+<header>
+  <a href="index.html" class="logo">🖼️ ImageTools</a>
+  <nav>
+    <a href="image-resizer.html">Resize</a>
+    <a href="image-cropper.html">Crop</a>
+    <a href="image-compressor.html" class="active">Compress</a>
+    <a href="image-to-base64.html">Base64</a>
+    <a href="image-filters.html">Filters</a>
+    <a href="color-extractor.html">Color</a>
+    <a href="svg-to-png.html">SVG→PNG</a>
+  </nav>
+</header>
+<div class="container">
+  <h1>🗜️ Image Compressor</h1>
+  <div class="drop-zone" id="dropZone">
+    <span class="icon">📂</span>
+    <p>Drag & drop an image here, or click to select</p>
+    <input type="file" accept="image/*" id="fileInput" style="display:none">
+  </div>
+  <div class="controls" id="controls">
+    <div class="row">
+      <label>Format:</label>
+      <select id="format"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select>
+      <label>Quality: <span id="qualVal">80</span>%</label>
+      <input type="range" id="quality" min="1" max="100" value="80">
+    </div>
+    <div class="row">
+      <button class="btn" id="compressBtn">Compress & Download</button>
+    </div>
+  </div>
+  <div class="spinner" id="spinner"></div>
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="val" id="origSize">-</div><div class="lbl">Original</div></div>
+    <div class="stat"><div class="val" id="compSize">-</div><div class="lbl">Compressed</div></div>
+    <div class="stat saved"><div class="val" id="savedPct">-</div><div class="lbl">Saved</div></div>
+  </div>
+  <div class="preview" id="preview"></div>
+</div>
+<footer>
+  <p><a href="index.html">← Back to all tools</a></p>
+  <p style="margin-top:0.5rem"><a href="image-resizer.html">Resize</a> · <a href="image-cropper.html">Crop</a> · <a href="image-compressor.html">Compress</a> · <a href="image-to-base64.html">Base64</a> · <a href="image-filters.html">Filters</a> · <a href="color-extractor.html">Color</a> · <a href="svg-to-png.html">SVG→PNG</a></p>
+</footer>
+<div class="toast" id="toast"></div>
+<script>
+const dropZone=document.getElementById('dropZone'),fileInput=document.getElementById('fileInput'),controls=document.getElementById('controls'),quality=document.getElementById('quality'),qualVal=document.getElementById('qualVal'),format=document.getElementById('format'),compressBtn=document.getElementById('compressBtn'),stats=document.getElementById('stats'),origSize=document.getElementById('origSize'),compSize=document.getElementById('compSize'),savedPct=document.getElementById('savedPct'),preview=document.getElementById('preview'),spinner=document.getElementById('spinner'),toast=document.getElementById('toast');
+let origImg=null,origFileSize=0;
+function showToast(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2500)}
+function fmtSize(b){return b<1024?b+' B':b<1048576?(b/1024).toFixed(1)+' KB':(b/1048576).toFixed(2)+' MB'}
+quality.addEventListener('input',()=>qualVal.textContent=quality.value);
+dropZone.addEventListener('click',()=>fileInput.click());
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag-over')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag-over');if(e.dataTransfer.files[0])loadImage(e.dataTransfer.files[0])});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])loadImage(e.target.files[0])});
+function loadImage(file){
+  origFileSize=file.size;
+  const i=new Image();i.onload=()=>{origImg=i;controls.style.display='block';preview.innerHTML='';preview.appendChild(i);stats.style.display='none';showToast('Image loaded!')};i.src=URL.createObjectURL(file);
+}
+compressBtn.addEventListener('click',()=>{
+  if(!origImg)return;spinner.style.display='block';
+  setTimeout(()=>{
+    const c=document.createElement('canvas');c.width=origImg.naturalWidth;c.height=origImg.naturalHeight;
+    c.getContext('2d').drawImage(origImg,0,0);
+    const q=parseInt(quality.value)/100,fmt=format.value;
+    c.toBlob(blob=>{
+      spinner.style.display='none';stats.style.display='grid';
+      origSize.textContent=fmtSize(origFileSize);compSize.textContent=fmtSize(blob.size);
+      const pct=((1-blob.size/origFileSize)*100).toFixed(1);
+      savedPct.textContent=(pct>0?'-':'')+Math.abs(pct)+'%';
+      const u=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=u;a.download='compressed.'+( fmt==='image/webp'?'webp':'jpg');a.click();URL.revokeObjectURL(u);
+      showToast('✅ Compressed and downloaded!');
+    },fmt,q);
+  },100);
+});
+</script></body></html>
